@@ -1,0 +1,28 @@
+{
+  "name": "javascript-to-do-list",
+  "version": "1.0.0",
+  "private": true,
+  "description": "A simple todo-list app",
+  "main": "index.js",
+  "devDependencies": {
+    "clean-webpack-plugin": "^3.0.0",
+    "html-webpack-plugin": "^3.2.0",
+    "node-sass": "^4.13.0",
+    "sass-loader": "^8.0.0",
+    "url-loader": "^2.3.0",
+    "webpack": "^4.41.2"
+  },
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Oluwadamilareolusakin/javascript-to-do-list.git"
+  },
+  "author": "Oluwadamilare Olusakin",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/Oluwadamilareolusakin/javascript-to-do-list/issues"
+  },
+  "homepage": "https://github.com/Oluwadamilareolusakin/javascript-to-do-list#readme"
+}
