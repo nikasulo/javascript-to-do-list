@@ -48,7 +48,7 @@ const renderLists = () => {
                         ${item.done ? 'done' : ''}">
       <div class="item-heading row">
         <h3>${item.title}</h3>
-        <h4>${item.dueDate}</h4>
+        <h4>Due: ${item.dueDate}</h4>
       </div>
       <div class="item-description"><p>${item.description}</p></div>
       <div class="item-controls row">
@@ -98,7 +98,7 @@ const createItem = (e) => {
   let newItem = new Item(title, description, dueDate, priority, false);
   newItem.setId(lists[listId].items.length);
   newItem.setDone(false);
-  lists[listId].addItem(newItem);
+  lists[listId].items.push(newItem);
   localStorage.setItem('listsArray', JSON.stringify(lists));
   renderLists();
   closeListModal();
