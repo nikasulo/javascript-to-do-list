@@ -69,7 +69,7 @@ export const itemForm = (listId) =>
       <input placeholder = "Task description">
     </div>
     <div class="fields">
-      <input placeholder = "Due date">
+      <input placeholder = "Due date" type="date">
     </div>
     <div class="fields">
       <select placeholder = "Priority">
