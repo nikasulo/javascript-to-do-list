@@ -1,70 +1,139 @@
-import { CreateButton, item, render, list } from './auxiliaries';
+import './stylesheets/main.scss';
+import { Item, render, List, listForm, itemForm} 
+from './auxiliaries';
 
-let currentList;
-const lists = [];
+
+const lists = localStorage.getItem('listsArray') ? JSON.parse(localStorage.getItem('listsArray')) : [];
 
 const newList = (e) => {
-  openModal(e.id);
+  openListModal(e)
 }
 
-const createList = () => {
-  let form = document.querySelector('list-create-form');
-  let title = form[0];
-  let description = form[1];
-  let dueDate = form[2];
-  let priority = form[3];
-  let listsContainer = document.querySelector(".lists-container");
-  currentList = list(title, description, dueDate, priority);
+const createList = (e) => {
+  e.preventDefault();
+  let form = document.querySelector('.list-create-form');
+  let title = form[0].value;
+  let currentList = new List();
+  currentList.setTitle(title);
+  currentList.setId(lists.length);
   lists.push(currentList);
-  let currentLists = lists.map((list) => {
-    `<div class = "column">
-      <div class = "list-title">${this.title}</div>
-      ${createButton('create-item', 'New Item', 'Item')};
-    </div>`
-  });
-  render(currentLists, listsContainer);
+  localStorage.setItem('listsArray', JSON.stringify(lists));
+  renderLists();
   closeListModal();
 }
 
-const newItem = (e) => {
-  openModal(e.id);
+const markAsDone = (e) => {
+  const listId = e.target.dataset.listid
+  const itemPosition = e.target.dataset.itemposition;
+  const item = lists[listId].items[itemPosition];
+  item.setDone(true);
+  renderLists(); 
 }
 
-const createItem = () => {
-  let form = document.querySelector('list-create-form');
-  let title = form[0];
-  currentList = new list(title);
-  closeModal();
+const deleteItem = (e) => {
+  const listId = e.target.dataset.listid
+  const itemId = e.target.dataset.itemposition;
+  const list = lists[listId];
+  list.items = list.items.filter((item) => item.id != itemId);
+  localStorage.setItem('listsArray', JSON.stringify(lists));
+  renderLists(); 
 }
 
-const openModal = (id) => {
-  const modal = document.querySelector(`${id}-modal`);
-  modal.classList.toggle('.open-modal');
+const renderLists = () => {
+  let listsContainer = document.querySelector(".lists-container");
+  let currentLists = lists.map((list) => {
+    let items = list.items.map((item) => 
+    `<div class = "item ${item.priority === 'High' ? 'high' : ''} 
+                        ${item.priority === 'Moderate' ? 'moderate' : ''} 
+                        ${item.done ? 'done' : ''}">
+      <div class="item-heading row">
+        <h3>${item.title}</h3>
+        <h4>${item.dueDate}</h4>
+      </div>
+      <div class="item-description"><p>${item.description}</p></div>
+      <div class="item-controls row">
+        <button class='done-btn' data-listid = "${list.id}" data-itemposition = "${item.id}">Done</button>
+        <button class='delete-btn' data-listid = "${list.id}" data-itemposition = "${item.id}">Delete</button>
+      </div>
+    </div>
+    `)
+      
+    return (`<div class = "column list">
+    <div class = "list-title">${list.title}</div>
+    <div class="items-${list.id}">
+        ${items.length > 0 ? items.join('') : ''}
+        </div>
+        <button id = "${list.id}" class = "new-item-btn">New Item</button>
+        </div>`)
+        
+      }).join('')
+  render(currentLists, listsContainer);
+  const newItemButtons = document.querySelectorAll('.new-item-btn');
+  const doneButtons = document.querySelectorAll('.done-btn');
+  const deleteButtons = document.querySelectorAll('.delete-btn');
+  if (newItemButtons.length > 0){
+    newItemButtons.forEach((btn) => btn.addEventListener('click', (event) => newItem(event)));
+  }
+  if (doneButtons.length > 0){
+    doneButtons.forEach((btn) => btn.addEventListener('click', (event) => markAsDone(event)));
+  }
+  if (deleteButtons.length > 0){
+    deleteButtons.forEach((btn) => btn.addEventListener('click', (event) => deleteItem(event)));
+  }
+  localStorage.setItem('lists', lists);
+}
+
+const newItem = (event) => {
+  openItemModal(event.target.id);
+}
+
+const createItem = (e) => {
+  const listId = e.target.id;
+  e.preventDefault();
+  let form = document.querySelector('.item-create-form');
+  let title = form[0].value;
+  let description = form[1].value;
+  let dueDate = form[2].value;
+  let priority = form[3].value;
+  let newItem = new Item(title, description, dueDate, priority, false);
+  newItem.setId(lists[listId].items.length);
+  newItem.setDone(false);
+  lists[listId].addItem(newItem);
+  localStorage.setItem('listsArray', JSON.stringify(lists));
+  renderLists();
+  closeListModal();
+  closeItemModal();
+}
+
+const openListModal = () => {
+  const modal = document.querySelector(".create-list-modal");
+  modal.classList.toggle('open');
+}
+
+const openItemModal = (id) => {
+  const modal = document.querySelector(".create-item-modal");
+  const form = itemForm(id);
+  modal.innerHTML = form;
+  closeListModal();
+  modal.classList.toggle('open');
+  document.querySelector('.create-item-btn').addEventListener('click', (event) => createItem(event));
 }
 
 const closeListModal = () => {
-  const modal = document.querySelector('open-modal');
-  modal.classList.toggle('.open-modal');
+  const modal = document.querySelector('.create-list-modal');
+  modal.classList.toggle('open');
 }
 
-(() => {
-  const main = document.createElement('div');
-  const nav = document.createElement('nav');
-  const navLeft = document.createElement('div');
-  const navRight = document.createElement('div');
-  const body = document.querySelector('body');
-  let listsContainer = document.createElement('div');
-  main.classList.add('main');
-  nav.classList.add('nav');
-  nav.classList.add('row');
-  listsContainer.classList.add('list-container');
-  listsContainer.classList.add('row');
-  nav.appendChild(navLeft);
-  nav.appendChild(navRight);
-  navRight.innerHTML =  CreateButton('create-list', 'New List');
-  main.appendChild(nav);
-  main.appendChild(listsContainer);
-  body.appendChild(main);
-  document.querySelector('#create-list').addEventListener('click', (event) => newList(event));
-  document.querySelector('#create-item').addEventListener('click', (event) => newItem(event));
-})();
+const closeItemModal = () => {
+  const modal = document.querySelector('.create-item-modal');
+  modal.classList.toggle('open');
+}
+
+const addEventListeners = () => {
+  document.querySelector('.create-list-btn').addEventListener('click', (event) => createList(event))
+  document.querySelector('.new-list-btn').addEventListener('click', newList);
+}
+
+
+document.addEventListener('DOMContentLoaded', addEventListeners());
+document.addEventListener('DOMContentLoaded', renderLists());
