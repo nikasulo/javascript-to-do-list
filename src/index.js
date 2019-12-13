@@ -134,6 +134,27 @@ const addEventListeners = () => {
   document.querySelector('.new-list-btn').addEventListener('click', newList);
 }
 
-
+const setup = () => {
+  if (lists.length === 0){
+    let currentList = new List();
+    currentList.setTitle("A placeholder list");
+    currentList.setId(lists.length);
+    
+    let title = "An item";
+    let description = "A description";
+    let dueDate = "12-09-12";
+    let priority = "medium";
+  
+    let newItem = new Item(title, description, dueDate, priority, false);
+    newItem.setId(currentList.items.length);
+    newItem.setDone(false);
+    currentList.items.push(newItem);
+  
+    lists.push(currentList);
+    localStorage.setItem('listsArray', JSON.stringify(lists));
+  
+  }
+  renderLists();
+}
 document.addEventListener('DOMContentLoaded', addEventListeners());
-document.addEventListener('DOMContentLoaded', renderLists());
+document.addEventListener('DOMContentLoaded', setup());
