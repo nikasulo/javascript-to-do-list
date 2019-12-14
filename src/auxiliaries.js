@@ -34,7 +34,7 @@ export class Item{
     this.setItemPriority(priority);
     this.setListId(listId)
     this.setTitle(title);
-    
+    this.setDone(false);
   }
   
 }
@@ -63,22 +63,22 @@ export class List{
 export const itemForm = (listId) => 
   `<form class="item-create-form">
     <div class="fields">
-        <input placeholder = "Task name">
+        <input placeholder = "Task name" class='item-title'>
     </div>
     <div class="fields">
-      <input placeholder = "Task description">
+      <input placeholder = "Task description" class='itemdescription'>
     </div>
     <div class="fields">
-      <input placeholder = "Due date" type="date">
+      <input placeholder = "Due date" type="date" class='date'>
     </div>
     <div class="fields">
-      <select placeholder = "Priority">
+      <select placeholder = "Priority" class='priority'>
         <option value = "Low">Low</option>
         <option value = "Moderate">Moderate</option>
         <option value = "High">High</option>
       </select>
     </div>
-    <div class="actions">
+    <div class="actions item-create-action">
       <input type = "submit" value = "Create item" id="${listId}" class="create-item-btn"/>
     </div>
     </form>`

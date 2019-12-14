@@ -26,7 +26,8 @@ const markAsDone = (e) => {
   const listId = e.target.dataset.listid
   const itemPosition = e.target.dataset.itemposition;
   const item = lists[listId].items[itemPosition];
-  item.setDone(true);
+  console.log(item);
+  item.done = true;
   renderLists(); 
 }
 
@@ -54,6 +55,7 @@ const renderLists = () => {
       <div class="item-controls row">
         <button class='done-btn' data-listid = "${list.id}" data-itemposition = "${item.id}">Done</button>
         <button class='delete-btn' data-listid = "${list.id}" data-itemposition = "${item.id}">Delete</button>
+        <button class='edit-btn' data-listid = "${list.id}" data-itemposition = "${item.id}">Edit</button>
       </div>
     </div>
     `)
@@ -71,6 +73,8 @@ const renderLists = () => {
   const newItemButtons = document.querySelectorAll('.new-item-btn');
   const doneButtons = document.querySelectorAll('.done-btn');
   const deleteButtons = document.querySelectorAll('.delete-btn');
+  const editButtons = document.querySelectorAll('.edit-btn');
+
   if (newItemButtons.length > 0){
     newItemButtons.forEach((btn) => btn.addEventListener('click', (event) => newItem(event)));
   }
@@ -79,8 +83,54 @@ const renderLists = () => {
   }
   if (deleteButtons.length > 0){
     deleteButtons.forEach((btn) => btn.addEventListener('click', (event) => deleteItem(event)));
+  }  
+  
+  if (editButtons.length > 0){
+    editButtons.forEach((btn) => btn.addEventListener('click', (event) => editItem(event)));
   }
   localStorage.setItem('lists', lists);
+}
+
+const editItem = (event) => {
+  const listId = event.target.dataset.listid;
+  const itemPosition = event.target.dataset.itemposition;
+  const item = lists[listId].items[itemPosition];
+  openEditModal(item, listId, itemPosition);
+}
+
+const openEditModal = (item, listId, itemPosition) => {
+  const modal = document.querySelector(".create-item-modal");
+  const form = itemForm(listId);
+  modal.innerHTML = form;
+  modal.classList.toggle('open');
+  fillItemInfo(item, listId, itemPosition)
+}
+
+const fillItemInfo = (item, listId, itemPosition) => {
+  document.querySelector('.item-title').value = item.title;
+  document.querySelector('.itemdescription').value = item.description;
+  document.querySelector('.date').value = item.dueDate;
+  document.querySelector('.priority').value = item.priority;
+  document.querySelector('.create-item-btn').value = 'Update Item';
+  const updateButton = document.querySelector('.create-item-btn');
+  updateButton.value = 'Update Item';
+  updateButton.addEventListener('click', () => updateItem(event, listId, itemPosition))
+}
+
+const updateItem = (event, listId, itemPosition) => {
+  event.preventDefault();
+  const item = lists[listId].items[itemPosition];
+  let form = document.querySelector('.item-create-form');
+  item.title = form[0].value;
+  item.description = form[1].value;
+  item.dueDate = form[2].value;
+  item.priority = form[3].value;
+  lists[listId].items[itemPosition] = item;
+  console.log(lists[listId].items[itemPosition])
+  console.log(item)
+  localStorage.setItem('listsArray', JSON.stringify(lists));
+  renderLists();
+  closeItemModal();
 }
 
 const newItem = (event) => {
